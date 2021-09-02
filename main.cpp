@@ -4,18 +4,18 @@
 #include <algorithm>
 
 using Cmd = std::string;
-using CmdBlock = std::vector<Cmd>;
+using CmdBulk = std::vector<Cmd>;
 
-void printCmdBlock(std::ostream& out, const CmdBlock& cmdBlock)
+void printCmdBulk(std::ostream& out, const CmdBulk& cmdBulk)
 {
-    if (cmdBlock.empty())
+    if (cmdBulk.empty())
         return;
 
     out<< "bulk: ";
-    for (size_t idx = 0; idx < cmdBlock.size(); ++idx)
+    for (size_t idx = 0; idx < cmdBulk.size(); ++idx)
     {
-        out << cmdBlock[idx];
-        if (idx + 1 < cmdBlock.size())
+        out << cmdBulk[idx];
+        if (idx + 1 < cmdBulk.size())
             out << ", ";
     }
     out << std::endl;
@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
         }
 
         Cmd currentCmd;
-        CmdBlock currentCmdBlock;
+        CmdBulk currentCmdBulk;
 
         int braceIt = 0;
         while(std::getline(std::cin, currentCmd))
@@ -48,8 +48,8 @@ int main(int argc, char const *argv[])
             {
                 if (braceIt == 0)
                 {
-                    printCmdBlock(std::cout, currentCmdBlock);
-                    currentCmdBlock.clear();
+                    printCmdBulk(std::cout, currentCmdBulk);
+                    currentCmdBulk.clear();
                 }
                 braceIt++;
             }
@@ -58,23 +58,23 @@ int main(int argc, char const *argv[])
                 braceIt = std::max(0, braceIt - 1);
                 if (braceIt == 0)
                 {
-                    printCmdBlock(std::cout, currentCmdBlock);
-                    currentCmdBlock.clear();
+                    printCmdBulk(std::cout, currentCmdBulk);
+                    currentCmdBulk.clear();
                 }
                 continue;
             }
             else
-                currentCmdBlock.push_back(currentCmd);
+                currentCmdBulk.push_back(currentCmd);
 
-            if (currentCmdBlock.size() == n && braceIt == 0)
+            if (currentCmdBulk.size() == n && braceIt == 0)
             {                
-                printCmdBlock(std::cout, currentCmdBlock);
-                currentCmdBlock.clear();
+                printCmdBulk(std::cout, currentCmdBulk);
+                currentCmdBulk.clear();
             }
         }
 
         if (braceIt == 0)
-            printCmdBlock(std::cout, currentCmdBlock);
+            printCmdBulk(std::cout, currentCmdBulk);
     }
     catch(const std::exception &e)
     {
