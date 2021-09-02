@@ -3,22 +3,48 @@
 #include <string>
 #include <algorithm>
 
-using Cmd = std::string;
-using CmdBulk = std::vector<Cmd>;
+#include "lib/cmd_bulk.h" 
 
-void printCmdBulk(std::ostream& out, const CmdBulk& cmdBulk)
+void bulkProcessor(std::istream& in, std::ostream& out, int n)
 {
-    if (cmdBulk.empty())
-        return;
+    bulk::Cmd currentCmd;
+    bulk::CmdBulk currentCmdBulk;
 
-    out<< "bulk: ";
-    for (size_t idx = 0; idx < cmdBulk.size(); ++idx)
+    int braceIt = 0;
+    
+    while(std::getline(in, currentCmd))
     {
-        out << cmdBulk[idx];
-        if (idx + 1 < cmdBulk.size())
-            out << ", ";
+        if (currentCmd == "{")
+        {
+            if (braceIt == 0)
+            {
+                bulk::printCmdBulk(out, currentCmdBulk);
+                currentCmdBulk.clear();
+            }
+            braceIt++;
+        }
+        else if (currentCmd == "}")
+        {
+            braceIt = std::max(0, braceIt - 1);
+            if (braceIt == 0)
+            {
+                bulk::printCmdBulk(out, currentCmdBulk);
+                currentCmdBulk.clear();
+            }
+            continue;
+        }
+        else
+            currentCmdBulk.addCmd(currentCmd);
+
+        if (currentCmdBulk.size() == n && braceIt == 0)
+        {                
+            bulk::printCmdBulk(out, currentCmdBulk);
+            currentCmdBulk.clear();
+        }
     }
-    out << std::endl;
+
+    if (braceIt == 0)
+        bulk::printCmdBulk(out, currentCmdBulk);
 }
 
 int main(int argc, char const *argv[])
@@ -38,43 +64,7 @@ int main(int argc, char const *argv[])
             return 0;
         }
 
-        Cmd currentCmd;
-        CmdBulk currentCmdBulk;
-
-        int braceIt = 0;
-        while(std::getline(std::cin, currentCmd))
-        {
-            if (currentCmd == "{")
-            {
-                if (braceIt == 0)
-                {
-                    printCmdBulk(std::cout, currentCmdBulk);
-                    currentCmdBulk.clear();
-                }
-                braceIt++;
-            }
-            else if (currentCmd == "}")
-            {
-                braceIt = std::max(0, braceIt - 1);
-                if (braceIt == 0)
-                {
-                    printCmdBulk(std::cout, currentCmdBulk);
-                    currentCmdBulk.clear();
-                }
-                continue;
-            }
-            else
-                currentCmdBulk.push_back(currentCmd);
-
-            if (currentCmdBulk.size() == n && braceIt == 0)
-            {                
-                printCmdBulk(std::cout, currentCmdBulk);
-                currentCmdBulk.clear();
-            }
-        }
-
-        if (braceIt == 0)
-            printCmdBulk(std::cout, currentCmdBulk);
+        bulkProcessor(std::cin, std::cout, n);
     }
     catch(const std::exception &e)
     {
