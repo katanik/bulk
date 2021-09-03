@@ -31,15 +31,18 @@ void BulkProcessor::processCurrentCmd()
         if (shouldBeFlush())
             flushCurrentBulk();
         m_braceCounter++;
+        return;
     }
-    else if (m_currentCmd == "}")
+
+    if (m_currentCmd == "}")
     {
         m_braceCounter = std::max(0, m_braceCounter - 1);
         if (shouldBeFlush())
             flushCurrentBulk();
+        return;
     }
-    else
-        m_currentCmdBulk.addCmd(m_currentCmd);
+
+    m_currentCmdBulk.addCmd(m_currentCmd);
 
     if (m_currentCmdBulk.size() == m_bulkNumber && shouldBeFlush())
         flushCurrentBulk();
@@ -47,8 +50,8 @@ void BulkProcessor::processCurrentCmd()
 
 void BulkProcessor::flushCurrentBulk()
 {
-    // print to standard output
-    bulk::printCmdBulk(std::cout, m_currentCmdBulk);
+    if (m_currentCmdBulk.isEmpty())
+        return;
 
     // print to file
     std::ofstream outputFile;
@@ -61,7 +64,10 @@ void BulkProcessor::flushCurrentBulk()
         return;
     }
     bulk::printCmdBulk(outputFile, m_currentCmdBulk);
+    outputFile.close();
 
+    // print to standard output
+    bulk::printCmdBulk(std::cout, m_currentCmdBulk);
     m_currentCmdBulk.clear();
 }
 
