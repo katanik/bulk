@@ -60,6 +60,7 @@ void BulkProcessor::flushCurrentBulk()
         std::cout << "failed to create file " << '\n';
         return;
     }
+    bulk::printCmdBulk(outputFile, m_currentCmdBulk);
 
     m_currentCmdBulk.clear();
 }
