@@ -1,5 +1,7 @@
 #include <iostream>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
 
 #include "bulk_processor.h"
 
@@ -45,7 +47,20 @@ void BulkProcessor::processCurrentCmd()
 
 void BulkProcessor::flushCurrentBulk()
 {
+    // print to standard output
     bulk::printCmdBulk(std::cout, m_currentCmdBulk);
+
+    // print to file
+    std::ofstream outputFile;
+    std::stringstream fileName;
+    fileName << "bulk" << m_currentCmdBulk.getTimeStamp() << ".log";
+    outputFile.open(fileName.str(), std::fstream::out);
+    if (!outputFile.is_open())
+    {
+        std::cout << "failed to create file " << '\n';
+        return;
+    }
+
     m_currentCmdBulk.clear();
 }
 
