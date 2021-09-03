@@ -1,4 +1,7 @@
 #include "cmd_bulk.h"
+#include <chrono>
+#include <ctime>
+#include <sstream>
 
 namespace bulk{
 
@@ -12,6 +15,11 @@ size_t CmdBulk::size() const
     return m_bulk.size();
 }
 
+std::string CmdBulk::getTimeStamp() const
+{
+    return m_timeStampStr;
+}
+
 const Cmd& CmdBulk::getCmd(size_t index) const
 {
     return m_bulk[index];
@@ -19,6 +27,17 @@ const Cmd& CmdBulk::getCmd(size_t index) const
 
 void CmdBulk::addCmd(const Cmd& cmd)
 {
+    if (m_bulk.empty())
+    {
+        //using namespace std::chrono;
+        auto now = std::chrono::system_clock::now();
+        auto duration = now.time_since_epoch();
+        auto timeStamp = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        std::stringstream ss;
+        ss << timeStamp;
+        m_timeStampStr = ss.str();
+    }
+
     m_bulk.push_back(cmd);
 }
 
