@@ -42,7 +42,7 @@ jobs:
     - name: Archive
       uses: papeloto/action-zip@v1
       with:
-        files: build/ip_filter build/Release/
+        files: build/bulk build/Release/
         dest: bulk-${{ runner.os }}.zip
 
     - name: Create Release ${{ runner.os }}
