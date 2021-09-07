@@ -1,11 +1,13 @@
 #include <iostream>
 
+#include <exception>
+
 #include "lib/bulk_processor.h"
 
 class BadInputException : public std::exception
 {
 public:
-virtual char const * what() const { return "Bad format of input data."; }
+virtual char const * what() const noexcept { return "Bad format of input data."; }
 };
 
 int main(int argc, char const *argv[])
