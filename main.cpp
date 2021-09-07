@@ -20,6 +20,9 @@ int main(int argc, char const *argv[])
         }
 
         bulk::BulkProcessor bulkProcessor{n};
+        bulk::Logger logger{&bulkProcessor};
+        bulk::FilePrinter filePrinter{&bulkProcessor};
+
         while(bulkProcessor.readNextLine())
         {
             bulkProcessor.processCurrentCmd();
